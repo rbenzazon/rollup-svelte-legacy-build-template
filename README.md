@@ -1,27 +1,82 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
+# rollup svelte legacy template
 
----
+This is a project template for [Svelte](https://svelte.dev) apps.
+Using rollup and babel to produce a IE compatible build while supporting code splitting
 
-# svelte app
+## manual install
 
-This is a project template for [Svelte](https://svelte.dev) apps. It lives at https://github.com/sveltejs/template.
+If you want to use this template on an existing svelte + rollup project follow these steps :
 
-To create a new project based on this template using [degit](https://github.com/Rich-Harris/degit):
-
+install babel
 ```bash
-npx degit sveltejs/template svelte-app
-cd svelte-app
+npm install --save-dev rollup-plugin-babel  
 ```
+install babel core
+```bash
+npm install --save-dev @babel/core  
+```
+for dynamic import support
+```bash
+npm install --save-dev @babel/plugin-syntax-dynamic-import
+```
+not sure what it does
+```bash
+npm install --save-dev @babel/plugin-transform-runtime
+```
+legacy browser target
+```bash
+npm install --save-dev @babel/preset-env
+```
+contains polyfills
+```bash
+npm install --save core-js@3
+```
+add in rollup.config.js
+```javascript
+import babel from 'rollup-plugin-babel'
 
-*Note that you will need to have [Node.js](https://nodejs.org) installed.*
-
+export default {
+//...
+plugins: [
+    babel({
+        extensions: [ '.js', '.mjs', '.html', '.svelte' ],
+        runtimeHelpers: true,
+        exclude: [ 'node_modules/@babel/**','node_modules/core-js/**' ],
+        presets: [
+            [
+            '@babel/preset-env',
+            {
+                targets: '> 0.25%, not dead',
+                useBuiltIns: 'usage',
+                corejs: 3
+            }
+            ]
+        ],
+        plugins: [
+            '@babel/plugin-syntax-dynamic-import',
+            [
+            '@babel/plugin-transform-runtime',
+            {
+                useESModules: true
+            }
+            ]
+        ]
+        })
+//...
+]}
+```
+in the html code use this to refer to your main.js
+```html
+<script defer data-main="/build/main.js" src='/require.js'></script>
+```
+where /require.js is the path to require.js found at this address :
+[require.js](https://requirejs.org/docs/release/2.3.3/minified/require.js)
 
 ## Get started
 
 Install the dependencies...
 
 ```bash
-cd svelte-app
 npm install
 ```
 
@@ -42,52 +97,4 @@ To create an optimised version of the app:
 
 ```bash
 npm run build
-```
-
-You can run the newly built app with `npm run start`. This uses [sirv](https://github.com/lukeed/sirv), which is included in your package.json's `dependencies` so that the app will work when you deploy to platforms like [Heroku](https://heroku.com).
-
-
-## Single-page app mode
-
-By default, sirv will only respond to requests that match files in `public`. This is to maximise compatibility with static fileservers, allowing you to deploy your app anywhere.
-
-If you're building a single-page app (SPA) with multiple routes, sirv needs to be able to respond to requests for *any* path. You can make it so by editing the `"start"` command in package.json:
-
-```js
-"start": "sirv public --single"
-```
-
-
-## Deploying to the web
-
-### With [now](https://zeit.co/now)
-
-Install `now` if you haven't already:
-
-```bash
-npm install -g now
-```
-
-Then, from within your project folder:
-
-```bash
-cd public
-now deploy --name my-project
-```
-
-As an alternative, use the [Now desktop client](https://zeit.co/download) and simply drag the unzipped project folder to the taskbar icon.
-
-### With [surge](https://surge.sh/)
-
-Install `surge` if you haven't already:
-
-```bash
-npm install -g surge
-```
-
-Then, from within your project folder:
-
-```bash
-npm run build
-surge public my-project.surge.sh
 ```
