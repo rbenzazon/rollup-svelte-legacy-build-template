@@ -1,4 +1,4 @@
-<a href="#test" >test component{toto}</a>
+<a href="#test" >test component {toto}</a>
 <style>
     a {
         font-weight: bold;
